@@ -1,4 +1,4 @@
-# Anycast
+* Anycast
 version 0.0 (this will never need versioning so don't worry about it)
 
 I got tired of the endless casting in zig especially after the type arguemnts was removed from the casting functions in favor of using the expected return type. This can often lead to this string of verbose unnecessary casts, so I have slowly beed adding casting to this single casting function.
@@ -7,7 +7,7 @@ Will this cause bugs? Probably. It is a "do what I say and don't questions my au
 
 It will make it easier to do pointer and bit manipulation.
 
-## Future Direction
+** Future Direction
 
 There is no direction. I just add them as I need them, and if you want me to add something either post a PR or message me on reddit and I'll see what I can do.
 
