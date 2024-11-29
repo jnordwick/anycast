@@ -14,3 +14,21 @@ There is no direction. I just add them as I need them, and if you want me to add
 I do want to add zero-cost lvalue casts though since I find it quite annoying.
 
 More to come... maybe... or not... but likely... kinda likely.
+
+** Currently Supported
+
+#+begin_src
+int, float, bool, enum -> int, float, bool, enum
+int, ptr -> int, ptr
+struct -> struct, int
+#+end_src
+
+** Examples
+
+#+begin_src
+cast(u32, 1243.4)
+cast(bool, 123)
+cast([*]u32, "asfd")
+#+end_src
+
+
