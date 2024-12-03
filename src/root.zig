@@ -129,9 +129,7 @@ test "structs" {
 
 test "optional" {
     const f: ?f32 = 1.23;
-    const i: ?u32 = 1;
     const f2: ??f32 = 2.34;
-    const _i2: ??u32 = 2; // sloppy af
-    try TT.expectEqual(i, cast(?u32, f));
-    try TT.expectEqual(_i2, cast(??u32, f2));
+    try TT.expectEqual(@as(?u32, 1), cast(?u32, f));
+    try TT.expectEqual(@as(??u32, 2), cast(??u32, f2));
 }

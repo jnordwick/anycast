@@ -21,6 +21,7 @@ More to come... maybe... or not... but likely... kinda likely.
 int, float, bool, enum -> int, float, bool, enum
 int, ptr -> int, ptr
 struct -> struct, int
+optional -> optional
 #+end_src
 
 ** Examples
