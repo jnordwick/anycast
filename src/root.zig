@@ -36,7 +36,7 @@ pub inline fn to_bool(Target: type, val: anytype) Target {
 pub inline fn to_ptr(Target: type, val: anytype) Target {
     return switch (@typeInfo(@TypeOf(val))) {
         .ComptimeInt, .Int => @as(Target, @ptrFromInt(val)),
-        .Pointer => @as(Target, @ptrCast(val)),
+        .Pointer => @as(Target, @ptrCast(@constCast(val))),
         .Struct => to_struct(Target, val),
         else => comperr(@src(), Target, val),
     };
@@ -60,6 +60,13 @@ pub inline fn to_struct(Target: type, val: anytype) Target {
     return @as(*Target, @constCast(@ptrCast(&val))).*;
 }
 
+pub inline fn to_optional(Target: type, val: anytype) Target {
+    return switch (@typeInfo(@TypeOf(val))) {
+        .Optional => if (val) |v| cast(@typeInfo(Target).Optional.child, v) else null,
+        else => comperr(@src(), Target, val),
+    };
+}
+
 inline fn comperr(src: SourceLocation, Target: type, val: anytype) noreturn {
     const loc = src.fn_name;
     @compileError(loc ++ ": invalid cast " ++ @typeName(Target) ++ " from " ++ @typeName(@TypeOf(val)));
@@ -74,6 +81,7 @@ pub inline fn cast(Target: type, val: anytype) Target {
         .Bool => to_bool(Target, val),
         .Pointer => to_ptr(Target, val),
         .Enum => to_enum(Target, val),
+        .Optional => to_optional(Target, val),
         else => @compileError("invalid target cast"),
     };
 }
@@ -117,4 +125,13 @@ test "structs" {
     const ss = extern struct { a: u32, b: u32 };
     const sa = ss{ .a = 123, .b = 321 };
     try TT.expectEqual(@as(u32, 123), cast(u32, sa));
+}
+
+test "optional" {
+    const f: ?f32 = 1.23;
+    const i: ?u32 = 1;
+    const f2: ??f32 = 2.34;
+    const _i2: ??u32 = 2; // sloppy af
+    try TT.expectEqual(i, cast(?u32, f));
+    try TT.expectEqual(_i2, cast(??u32, f2));
 }
