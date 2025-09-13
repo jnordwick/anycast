@@ -3,50 +3,50 @@ const SourceLocation = std.builtin.SourceLocation;
 
 pub inline fn to_int(Target: type, val: anytype) Target {
     return switch (@typeInfo(@TypeOf(val))) {
-        .ComptimeInt, .Int => @as(Target, @intCast(val)),
-        .ComptimeFloat, .Float => @as(Target, @intFromFloat(val)),
-        .Struct => to_struct(Target, val),
-        .Enum => @as(Target, @intCast(@intFromEnum(val))),
-        .Bool => @as(Target, @intFromBool(val)),
-        .Pointer => @as(Target, @intCast(@as(usize, @intFromPtr(val)))),
+        .comptime_int, .int => @as(Target, @intCast(val)),
+        .comptime_float, .float => @as(Target, @intFromFloat(val)),
+        .@"struct" => to_struct(Target, val),
+        .@"enum" => @as(Target, @intCast(@intFromEnum(val))),
+        .bool => @as(Target, @intFromBool(val)),
+        .pointer => @as(Target, @intCast(@as(usize, @intFromPtr(val)))),
         else => comperr(@src(), Target, val),
     };
 }
 
 pub inline fn to_float(Target: type, val: anytype) Target {
     return switch (@typeInfo(@TypeOf(val))) {
-        .ComptimeInt, .Int => @as(Target, @floatFromInt(val)),
-        .ComptimeFloat, .Float => @as(Target, @floatCast(val)),
-        .Struct => to_struct(Target, val),
-        .Bool => @as(Target, @floatFromInt(@intFromBool(val))),
+        .comptime_int, .int => @as(Target, @floatFromInt(val)),
+        .comptime_float, .float => @as(Target, @floatCast(val)),
+        .@"struct" => to_struct(Target, val),
+        .bool => @as(Target, @floatFromInt(@intFromBool(val))),
         else => comperr(@src(), Target, val),
     };
 }
 
 pub inline fn to_bool(Target: type, val: anytype) Target {
     return switch (@typeInfo(@TypeOf(val))) {
-        .ComptimeInt, .Int => val != 0,
-        .ComptimeFloat, .Float => val != 0.0,
-        .Pointer => val != null,
-        .Enum => cast(bool, @intFromEnum(val)),
+        .comptime_int, .int => val != 0,
+        .comptime_float, .float => val != 0.0,
+        .pointer => val != null,
+        .@"enum" => cast(bool, @intFromEnum(val)),
         else => comperr(@src(), Target, val),
     };
 }
 
 pub inline fn to_ptr(Target: type, val: anytype) Target {
     return switch (@typeInfo(@TypeOf(val))) {
-        .ComptimeInt, .Int => @as(Target, @ptrFromInt(val)),
-        .Pointer => @as(Target, @ptrCast(@constCast(val))),
-        .Struct => to_struct(Target, val),
+        .comptime_int, .int => @as(Target, @ptrFromInt(val)),
+        .pointer => @as(Target, @ptrCast(@constCast(val))),
+        .@"struct" => to_struct(Target, val),
         else => comperr(@src(), Target, val),
     };
 }
 
 pub inline fn to_enum(Target: type, val: anytype) Target {
     return switch (@typeInfo(@TypeOf(val))) {
-        .ComptimeInt, .Int => @as(Target, @enumFromInt(val)),
-        .Enum => @as(Target, @enumFromInt(@intFromEnum(val))),
-        .Struct => to_struct(Target, val),
+        .comptime_int, .int => @as(Target, @enumFromInt(val)),
+        .@"enum" => @as(Target, @enumFromInt(@intFromEnum(val))),
+        .@"struct" => to_struct(Target, val),
         else => comperr(@src(), Target, val),
     };
 }
@@ -62,7 +62,7 @@ pub inline fn to_struct(Target: type, val: anytype) Target {
 
 pub inline fn to_optional(Target: type, val: anytype) Target {
     return switch (@typeInfo(@TypeOf(val))) {
-        .Optional => if (val) |v| cast(@typeInfo(Target).Optional.child, v) else null,
+        .optional => if (val) |v| cast(@typeInfo(Target).optional.child, v) else null,
         else => comperr(@src(), Target, val),
     };
 }
@@ -76,12 +76,12 @@ pub inline fn cast(Target: type, val: anytype) Target {
     const tti = @typeInfo(Target);
 
     return switch (tti) {
-        .Int => to_int(Target, val),
-        .Float => to_float(Target, val),
-        .Bool => to_bool(Target, val),
-        .Pointer => to_ptr(Target, val),
-        .Enum => to_enum(Target, val),
-        .Optional => to_optional(Target, val),
+        .int => to_int(Target, val),
+        .float => to_float(Target, val),
+        .bool => to_bool(Target, val),
+        .pointer => to_ptr(Target, val),
+        .@"enum" => to_enum(Target, val),
+        .optional => to_optional(Target, val),
         else => @compileError("invalid target cast"),
     };
 }
