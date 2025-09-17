@@ -57,7 +57,7 @@ pub inline fn to_struct(Target: type, val: anytype) Target {
     if (to_size > from_size) {
         comperr(@src(), Target, val);
     }
-    return @as(*Target, @constCast(@ptrCast(&val))).*;
+    return @as(*Target, @ptrCast(@constCast(&val))).*;
 }
 
 pub inline fn to_optional(Target: type, val: anytype) Target {
