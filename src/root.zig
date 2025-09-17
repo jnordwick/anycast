@@ -36,7 +36,7 @@ pub inline fn to_bool(Target: type, val: anytype) Target {
 pub inline fn to_ptr(Target: type, val: anytype) Target {
     return switch (@typeInfo(@TypeOf(val))) {
         .comptime_int, .int => @as(Target, @ptrFromInt(val)),
-        .pointer => @as(Target, @ptrCast(@constCast(val))),
+        .pointer => @as(Target, @ptrCast(@alignCast(@constCast(val)))),
         .@"struct" => to_struct(Target, val),
         else => comperr(@src(), Target, val),
     };
@@ -57,7 +57,7 @@ pub inline fn to_struct(Target: type, val: anytype) Target {
     if (to_size > from_size) {
         comperr(@src(), Target, val);
     }
-    return @as(*Target, @ptrCast(@constCast(&val))).*;
+    return @as(*Target, @ptrCast(@alignCast(@constCast(&val)))).*;
 }
 
 pub inline fn to_optional(Target: type, val: anytype) Target {
@@ -84,6 +84,10 @@ pub inline fn cast(Target: type, val: anytype) Target {
         .optional => to_optional(Target, val),
         else => @compileError("invalid target cast"),
     };
+}
+
+pub inline fn bitcast(Target: type, val: anytype) Target {
+    return @bitCast(val);
 }
 
 // ====================================
