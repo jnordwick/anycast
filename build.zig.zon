@@ -2,7 +2,7 @@
     .name = .anycast,
     .version = "0.0.0",
     .fingerprint = 0x456d1251c75e7aa6, // Changing this has security and trust implications.
-    .minimum_zig_version = "0.15.1",
+    .minimum_zig_version = "0.16.0",
     .dependencies = .{},
     .paths = .{
         "build.zig",
